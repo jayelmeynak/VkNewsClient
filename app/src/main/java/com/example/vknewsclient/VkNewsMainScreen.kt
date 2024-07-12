@@ -21,10 +21,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.vknewsclient.domain.FeedPost
+import com.example.vknewsclient.domain.StatisticType
 
 
 @Composable
 fun MainScreen() {
+    val feedPost = remember {
+        mutableStateOf(FeedPost())
+    }
     val items = listOf(NavigationItem.Home, NavigationItem.Favourite, NavigationItem.Profile)
     var selectedItem by remember { mutableStateOf<NavigationItem>(NavigationItem.Home) }
     Scaffold(
@@ -45,7 +50,21 @@ fun MainScreen() {
                 .background(MaterialTheme.colorScheme.background)
                 .padding(8.dp)
         ) {
-            PostCard(innerPadding)
+            PostCard(
+                innerPadding,
+                feedPost = feedPost.value,
+                onStatisticsItemClickListener = {
+                    val oldStatistics = feedPost.value.statistics
+                    val newStatistics = oldStatistics.toMutableList()
+                    when(it.type){
+                        StatisticType.VIEWS -> Unit
+                        StatisticType.SHARE -> newStatistics[1] = newStatistics[1].copy(count = newStatistics[1].count + 1)
+                        StatisticType.COMMENTS -> newStatistics[2] = newStatistics[2].copy(count = newStatistics[2].count + 1)
+                        StatisticType.LIKE -> newStatistics[3] = newStatistics[3].copy(count = newStatistics[3].count + 1)
+                    }
+                    feedPost.value = feedPost.value.copy(statistics = newStatistics)
+                }
+            )
         }
     }
 }
