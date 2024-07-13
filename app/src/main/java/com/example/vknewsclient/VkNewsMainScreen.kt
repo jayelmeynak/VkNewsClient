@@ -15,6 +15,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -22,14 +23,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.vknewsclient.domain.FeedPost
-import com.example.vknewsclient.domain.StatisticType
 
 
 @Composable
-fun MainScreen() {
-    val feedPost = remember {
-        mutableStateOf(FeedPost())
-    }
+fun MainScreen(viewModel: MainViewModel) {
+    val feedPost = viewModel.feedPost.observeAsState(FeedPost())
     val items = listOf(NavigationItem.Home, NavigationItem.Favourite, NavigationItem.Profile)
     var selectedItem by remember { mutableStateOf<NavigationItem>(NavigationItem.Home) }
     Scaffold(
@@ -53,17 +51,18 @@ fun MainScreen() {
             PostCard(
                 innerPadding,
                 feedPost = feedPost.value,
-                onStatisticsItemClickListener = {
-                    val oldStatistics = feedPost.value.statistics
-                    val newStatistics = oldStatistics.toMutableList()
-                    when(it.type){
-                        StatisticType.VIEWS -> Unit
-                        StatisticType.SHARE -> newStatistics[1] = newStatistics[1].copy(count = newStatistics[1].count + 1)
-                        StatisticType.COMMENTS -> newStatistics[2] = newStatistics[2].copy(count = newStatistics[2].count + 1)
-                        StatisticType.LIKE -> newStatistics[3] = newStatistics[3].copy(count = newStatistics[3].count + 1)
-                    }
-                    feedPost.value = feedPost.value.copy(statistics = newStatistics)
-                }
+                onViewsClickListener = { statisticItem ->
+                    viewModel.changeStatistics(statisticItem)
+                },
+                onLikeClickListener = { statisticItem ->
+                    viewModel.changeStatistics(statisticItem)
+                },
+                onShareClickListener = { statisticItem ->
+                    viewModel.changeStatistics(statisticItem)
+                },
+                onCommentClickListener = { statisticItem ->
+                    viewModel.changeStatistics(statisticItem)
+                },
             )
         }
     }

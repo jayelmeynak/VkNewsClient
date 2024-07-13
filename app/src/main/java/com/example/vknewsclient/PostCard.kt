@@ -36,7 +36,10 @@ import com.example.vknewsclient.domain.StatisticType
 fun PostCard(
     topPadding: PaddingValues,
     feedPost: FeedPost,
-    onStatisticsItemClickListener: (StatisticItem) -> Unit
+    onLikeClickListener: (StatisticItem) -> Unit,
+    onShareClickListener: (StatisticItem) -> Unit,
+    onCommentClickListener: (StatisticItem) -> Unit,
+    onViewsClickListener: (StatisticItem) -> Unit
 ) {
     Card(
         modifier = Modifier.padding(top = topPadding.calculateTopPadding()),
@@ -57,7 +60,10 @@ fun PostCard(
             Spacer(modifier = Modifier.height(8.dp))
             PostFooter(
                 statistic = feedPost.statistics,
-                onItemClickListener = onStatisticsItemClickListener
+                onLikeClickListener = onLikeClickListener,
+                onCommentClickListener = onCommentClickListener,
+                onShareClickListener = onShareClickListener,
+                onViewsClickListener = onViewsClickListener
             )
         }
     }
@@ -123,7 +129,10 @@ private fun List<StatisticItem>.getItemByType(type: StatisticType): StatisticIte
 @Composable
 fun PostFooter(
     statistic: List<StatisticItem>,
-    onItemClickListener: (StatisticItem) -> Unit
+    onLikeClickListener: (StatisticItem) -> Unit,
+    onShareClickListener: (StatisticItem) -> Unit,
+    onCommentClickListener: (StatisticItem) -> Unit,
+    onViewsClickListener: (StatisticItem) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -140,7 +149,7 @@ fun PostFooter(
                 iconResId = R.drawable.ic_views_count,
                 text = viewItem.count.toString(),
                 onItemClickListener = {
-                    onItemClickListener(viewItem)
+                    onViewsClickListener(viewItem)
                 }
             )
         }
@@ -155,19 +164,19 @@ fun PostFooter(
             IconWithText(iconResId = R.drawable.ic_share,
                 text = shareItem.count.toString(),
                 onItemClickListener = {
-                    onItemClickListener(shareItem)
+                    onShareClickListener(shareItem)
                 })
             val commentItem = statistic.getItemByType(StatisticType.COMMENTS)
             IconWithText(iconResId = R.drawable.ic_comment,
                 text = commentItem.count.toString(),
                 onItemClickListener = {
-                    onItemClickListener(commentItem)
+                    onCommentClickListener(commentItem)
                 })
             val likeItem = statistic.getItemByType(StatisticType.LIKE)
             IconWithText(iconResId = R.drawable.ic_like,
                 text = likeItem.count.toString(),
                 onItemClickListener = {
-                    onItemClickListener(likeItem)
+                    onLikeClickListener(likeItem)
                 })
         }
 
