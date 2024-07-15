@@ -20,11 +20,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import com.example.vknewsclient.MainViewModel
 import com.example.vknewsclient.NavigationItem
 import com.example.vknewsclient.navigation.AppNavGraph
-import com.example.vknewsclient.navigation.Screen
+import com.example.vknewsclient.navigation.rememberNavigationState
 
 
 @Composable
@@ -32,28 +31,22 @@ fun MainScreen(viewModel: MainViewModel) {
     val navigationItems =
         listOf(NavigationItem.Home, NavigationItem.Favourite, NavigationItem.Profile)
     val listFeedPost = viewModel.feedPosts.observeAsState(listOf())
-    val navHostController = rememberNavController()
+    val navigationState = rememberNavigationState()
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
             BottomNavigationBar(
-                navHostController = navHostController,
+                navHostController = navigationState.navHostController,
                 items = navigationItems,
                 onItemSelected = { item ->
-                    navHostController.navigate(item.screen.route){
-                        popUpTo(Screen.NewsFeed.route){
-                            saveState = true
-                        }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
+                    navigationState.navigateTo(item.screen.route)
                 }
             )
         }
     )
     { innerPadding ->
         AppNavGraph(
-            navHostController = navHostController,
+            navHostController = navigationState.navHostController,
             homeScreenContent = {
                 HomeScreen(
                     viewModel = viewModel,
