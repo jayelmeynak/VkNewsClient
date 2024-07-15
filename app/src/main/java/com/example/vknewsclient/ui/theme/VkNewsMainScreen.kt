@@ -24,6 +24,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.vknewsclient.MainViewModel
 import com.example.vknewsclient.NavigationItem
 import com.example.vknewsclient.navigation.AppNavGraph
+import com.example.vknewsclient.navigation.Screen
 
 
 @Composable
@@ -39,7 +40,13 @@ fun MainScreen(viewModel: MainViewModel) {
                 navHostController = navHostController,
                 items = navigationItems,
                 onItemSelected = { item ->
-                    navHostController.navigate(item.screen.route)
+                    navHostController.navigate(item.screen.route){
+                        popUpTo(Screen.NewsFeed.route){
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
                 }
             )
         }
