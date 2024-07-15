@@ -80,17 +80,20 @@ fun BottomNavigationBar(
         val currentRoute = navBackStackEntry?.destination?.route
         items.forEach { item ->
             val selected = currentRoute == item.screen.route
-            val scale by animateFloatAsState(if (selected) 1.2f else 1.0f, label = "Hello")
+            val scale by animateFloatAsState(if (selected) 1.2f else 1.0f)
             NavigationBarItem(
                 icon = {
                     Icon(
-                        imageVector = item.iconId,
+                        imageVector =
+                            if(selected) item.iconIdRounded
+                            else item.iconIdOutlined
+                        ,
                         contentDescription = null,
                         modifier = Modifier.size(24.dp * scale)
                     )
                 },
                 label = { Text(stringResource(id = item.titleResId)) },
-                selected = currentRoute == item.screen.route,
+                selected = selected,
                 onClick = { onItemSelected(item) },
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = MaterialTheme.colorScheme.onPrimary,
