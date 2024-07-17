@@ -28,6 +28,7 @@ fun HomeScreen(
     innerPadding: PaddingValues,
     listFeedPost: State<List<FeedPost>>
 ) {
+
     Box(
         modifier = Modifier
             .fillMaxSize()
