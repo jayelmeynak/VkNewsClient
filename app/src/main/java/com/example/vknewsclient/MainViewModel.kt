@@ -66,8 +66,10 @@ class MainViewModel : ViewModel() {
     fun deleteFeedPost(feedPost: FeedPost) {
         val currentState = screenState.value
         if (currentState !is Posts) return
-        feedPosts.remove(feedPost)
-        _screenState.value = Posts(feedPosts)
+//        feedPosts.remove(feedPost)
+        val modifiedList = currentState.posts.toMutableList()
+        modifiedList.remove(feedPost)
+        _screenState.value = Posts(modifiedList)
     }
 
     fun changeState(feedPost: FeedPost) {
