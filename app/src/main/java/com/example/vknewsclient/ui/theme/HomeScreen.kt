@@ -1,6 +1,5 @@
 package com.example.vknewsclient.ui.theme
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -29,34 +28,31 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.vknewsclient.HomeScreenState
-import com.example.vknewsclient.MainViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.vknewsclient.NewsFeedViewModel
 import com.example.vknewsclient.domain.FeedPost
 
 
 @Composable
 fun HomeScreen(
-    viewModel: MainViewModel,
-    innerPadding: PaddingValues
+    innerPadding: PaddingValues,
+    onCommentsClickListener: (FeedPost) -> Unit
 ) {
 
-    val screenState = viewModel.screenState.observeAsState(HomeScreenState.Posts(listOf()))
+    val viewModel: NewsFeedViewModel = viewModel()
+    val screenState = viewModel.screenState.observeAsState(NewsFeedScreenState.Initial)
     when (val currentState = screenState.value) {
-        is HomeScreenState.Posts -> {
+        is NewsFeedScreenState.Posts -> {
             FeedPosts(
                 viewModel = viewModel,
                 innerPadding = innerPadding,
-                posts = currentState.posts
+                posts = currentState.posts,
+                onCommentsClickListener = onCommentsClickListener
             )
         }
 
-        is HomeScreenState.Comments -> {
-            CommentsScreen(feedPost = currentState.feedPost, comments = currentState.comments) {
-                viewModel.changeState(feedPost = currentState.feedPost)
-            }
-            BackHandler {
-                viewModel.changeState(feedPost = currentState.feedPost)
-            }
+        NewsFeedScreenState.Initial -> {
+
         }
     }
 
@@ -65,9 +61,10 @@ fun HomeScreen(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun FeedPosts(
-    viewModel: MainViewModel,
+    viewModel: NewsFeedViewModel,
     innerPadding: PaddingValues,
-    posts: List<FeedPost>
+    posts: List<FeedPost>,
+    onCommentsClickListener: (FeedPost) -> Unit
 ) {
 
     Box(
@@ -113,7 +110,7 @@ fun FeedPosts(
                             viewModel.changeStatistics(model, statisticItem)
                         },
                         onCommentClickListener = { statisticItem ->
-                            viewModel.changeState(model)
+                            onCommentsClickListener(model)
                         },
                     )
                 }

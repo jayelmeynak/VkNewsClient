@@ -6,17 +6,10 @@ import androidx.lifecycle.ViewModel
 import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.domain.StatisticItem
 import com.example.vknewsclient.domain.StatisticType
-import com.example.vknewsclient.HomeScreenState.Posts
-import com.example.vknewsclient.HomeScreenState.Comments
-import com.example.vknewsclient.domain.PostComment
+import com.example.vknewsclient.ui.theme.NewsFeedScreenState
+import com.example.vknewsclient.ui.theme.NewsFeedScreenState.Posts
 
-class MainViewModel : ViewModel() {
-
-    private val postComments = mutableListOf<PostComment>().apply {
-        repeat(20) {
-            add(PostComment(id = it))
-        }
-    }
+class NewsFeedViewModel : ViewModel() {
 
     private var feedPosts = mutableListOf<FeedPost>().apply {
         repeat(10) {
@@ -25,11 +18,10 @@ class MainViewModel : ViewModel() {
             )
         }
     }
-
     private val initialState = Posts(feedPosts)
 
-    private val _screenState = MutableLiveData<HomeScreenState>(initialState)
-    val screenState: LiveData<HomeScreenState> = _screenState
+    private val _screenState = MutableLiveData<NewsFeedScreenState>(initialState)
+    val screenState: LiveData<NewsFeedScreenState> = _screenState
 
     fun changeStatistics(feedPost: FeedPost, item: StatisticItem) {
         val currentState = screenState.value
@@ -70,15 +62,5 @@ class MainViewModel : ViewModel() {
         val modifiedList = currentState.posts.toMutableList()
         modifiedList.remove(feedPost)
         _screenState.value = Posts(modifiedList)
-    }
-
-    fun changeState(feedPost: FeedPost) {
-        val currentState = screenState.value
-        if (currentState is Posts) {
-            val comments = Comments(feedPost, postComments)
-            _screenState.value = comments
-        } else {
-            _screenState.value = Posts(feedPosts)
-        }
     }
 }

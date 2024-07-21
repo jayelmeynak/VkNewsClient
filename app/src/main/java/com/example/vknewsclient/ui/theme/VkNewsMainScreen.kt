@@ -13,23 +13,30 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.vknewsclient.MainViewModel
 import com.example.vknewsclient.NavigationItem
+import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.navigation.AppNavGraph
 import com.example.vknewsclient.navigation.rememberNavigationState
 
 
 @Composable
-fun MainScreen(viewModel: MainViewModel) {
+fun MainScreen() {
     val navigationItems =
         listOf(NavigationItem.Home, NavigationItem.Favourite, NavigationItem.Profile)
     val navigationState = rememberNavigationState()
+
+    val tempState: MutableState<FeedPost?> = remember {
+        mutableStateOf(null)
+    }
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
@@ -46,10 +53,19 @@ fun MainScreen(viewModel: MainViewModel) {
         AppNavGraph(
             navHostController = navigationState.navHostController,
             homeScreenContent = {
-                HomeScreen(
-                    viewModel = viewModel,
-                    innerPadding = innerPadding
-                )
+                if (tempState.value == null) {
+                    HomeScreen(
+                        innerPadding = innerPadding,
+                        onCommentsClickListener = {
+                            tempState.value = it
+                        }
+                    )
+                }
+                else{
+                    CommentsScreen(feedPost = tempState.value!!){
+                        tempState.value = null
+                    }
+                }
             },
             favouriteScreenContent = {
                 Box(modifier = Modifier.padding(innerPadding)) {
@@ -82,9 +98,8 @@ fun BottomNavigationBar(
                 icon = {
                     Icon(
                         imageVector =
-                            if(selected) item.iconIdRounded
-                            else item.iconIdOutlined
-                        ,
+                        if (selected) item.iconIdRounded
+                        else item.iconIdOutlined,
                         contentDescription = null,
                         modifier = Modifier.size(24.dp * scale)
                     )
