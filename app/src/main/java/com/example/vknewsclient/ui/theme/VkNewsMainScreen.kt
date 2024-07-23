@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.vknewsclient.NavigationItem
@@ -52,20 +53,22 @@ fun MainScreen() {
     { innerPadding ->
         AppNavGraph(
             navHostController = navigationState.navHostController,
-            homeScreenContent = {
-                if (tempState.value == null) {
-                    HomeScreen(
-                        innerPadding = innerPadding,
-                        onCommentsClickListener = {
-                            tempState.value = it
-                        }
-                    )
-                }
-                else{
-                    CommentsScreen(feedPost = tempState.value!!){
-                        tempState.value = null
+            newsFeedScreenContent = {
+                HomeScreen(
+                    innerPadding = innerPadding,
+                    onCommentsClickListener = {
+                        tempState.value = it
+                        navigationState.navigateToComments()
                     }
-                }
+                )
+            },
+            commentsScreenContent = {
+                CommentsScreen(
+                    onBackPressed = {
+                        navigationState.navHostController.popBackStack()
+                    },
+                    feedPost = tempState.value!!
+                )
             },
             favouriteScreenContent = {
                 Box(modifier = Modifier.padding(innerPadding)) {
@@ -90,9 +93,10 @@ fun BottomNavigationBar(
 ) {
     NavigationBar {
         val navBackStackEntry by navHostController.currentBackStackEntryAsState()
-        val currentRoute = navBackStackEntry?.destination?.route
         items.forEach { item ->
-            val selected = currentRoute == item.screen.route
+            val selected = navBackStackEntry?.destination?.hierarchy?.any {
+                (it.route == item.screen.route)
+            } ?: false
             val scale by animateFloatAsState(if (selected) 1.2f else 1.0f)
             NavigationBarItem(
                 icon = {
@@ -106,7 +110,11 @@ fun BottomNavigationBar(
                 },
                 label = { Text(stringResource(id = item.titleResId)) },
                 selected = selected,
-                onClick = { onItemSelected(item) },
+                onClick = {
+                    if (!selected) {
+                        onItemSelected(item)
+                    }
+                },
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = MaterialTheme.colorScheme.onPrimary,
                     unselectedIconColor = MaterialTheme.colorScheme.onSecondary
