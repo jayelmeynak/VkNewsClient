@@ -109,7 +109,7 @@ fun FeedPosts(
                         onShareClickListener = { statisticItem ->
                             viewModel.changeStatistics(model, statisticItem)
                         },
-                        onCommentClickListener = { statisticItem ->
+                        onCommentClickListener = { _ ->
                             onCommentsClickListener(model)
                         },
                     )

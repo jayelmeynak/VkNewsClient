@@ -13,10 +13,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -24,7 +21,6 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.vknewsclient.NavigationItem
-import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.navigation.AppNavGraph
 import com.example.vknewsclient.navigation.rememberNavigationState
 
@@ -35,9 +31,6 @@ fun MainScreen() {
         listOf(NavigationItem.Home, NavigationItem.Favourite, NavigationItem.Profile)
     val navigationState = rememberNavigationState()
 
-    val tempState: MutableState<FeedPost?> = remember {
-        mutableStateOf(null)
-    }
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
@@ -56,18 +49,17 @@ fun MainScreen() {
             newsFeedScreenContent = {
                 HomeScreen(
                     innerPadding = innerPadding,
-                    onCommentsClickListener = {
-                        tempState.value = it
-                        navigationState.navigateToComments()
+                    onCommentsClickListener = {feedPost ->
+                        navigationState.navigateToComments(feedPost)
                     }
                 )
             },
-            commentsScreenContent = {
+            commentsScreenContent = { feedPost ->
                 CommentsScreen(
                     onBackPressed = {
                         navigationState.navHostController.popBackStack()
                     },
-                    feedPost = tempState.value!!
+                    feedPost = feedPost
                 )
             },
             favouriteScreenContent = {
