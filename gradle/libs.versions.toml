@@ -1,5 +1,6 @@
 [versions]
 agp = "8.5.1"
+androidSdkApi = "4.0.1"
 gson = "2.10.1"
 kotlin = "1.9.0"
 coreKtx = "1.13.1"
@@ -13,6 +14,8 @@ navigationCompose = "2.7.7"
 runtimeLivedata = "1.6.8"
 
 [libraries]
+android-sdk-api = { module = "com.vk:android-sdk-api", version.ref = "androidSdkApi" }
+android-sdk-core = { module = "com.vk:android-sdk-core", version.ref = "androidSdkApi" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleRuntimeKtx" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
