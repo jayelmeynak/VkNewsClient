@@ -1,4 +1,4 @@
-package com.example.vknewsclient
+package com.example.vknewsclient.presentation.main
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.FavoriteBorder
@@ -8,6 +8,7 @@ import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.example.vknewsclient.R
 import com.example.vknewsclient.navigation.Screen
 
 sealed class NavigationItem(

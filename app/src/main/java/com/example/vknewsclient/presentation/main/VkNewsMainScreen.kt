@@ -1,4 +1,4 @@
-package com.example.vknewsclient.ui.theme
+package com.example.vknewsclient.presentation.main
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Box
@@ -20,9 +20,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.vknewsclient.NavigationItem
 import com.example.vknewsclient.navigation.AppNavGraph
 import com.example.vknewsclient.navigation.rememberNavigationState
+import com.example.vknewsclient.presentation.comments.CommentsScreen
+import com.example.vknewsclient.presentation.news.NewsFeedScreen
 
 
 @Composable
@@ -47,7 +48,7 @@ fun MainScreen() {
         AppNavGraph(
             navHostController = navigationState.navHostController,
             newsFeedScreenContent = {
-                HomeScreen(
+                NewsFeedScreen(
                     innerPadding = innerPadding,
                     onCommentsClickListener = {feedPost ->
                         navigationState.navigateToComments(feedPost)

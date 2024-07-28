@@ -1,20 +1,26 @@
-package com.example.vknewsclient
+package com.example.vknewsclient.presentation.main
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.vknewsclient.ui.theme.AuthState
 import com.vk.api.sdk.VK
+import com.vk.api.sdk.VKPreferencesKeyValueStorage
+import com.vk.api.sdk.auth.VKAccessToken
 import com.vk.api.sdk.auth.VKAuthenticationResult
 
-class MainViewModel : ViewModel() {
+class MainViewModel(applicetion: Application) : AndroidViewModel(applicetion) {
 
     private val _authState = MutableLiveData<AuthState>(AuthState.Initial)
     val authState: LiveData<AuthState> = _authState
 
 
     init {
-        _authState.value = if (VK.isLoggedIn()) AuthState.Authorized else AuthState.NotAuthorized
+        val  storage = VKPreferencesKeyValueStorage(applicetion)
+        val token = VKAccessToken.restore(storage)
+        val isLoggedIn = token != null && token.isValid
+        _authState.value = if (isLoggedIn) AuthState.Authorized else AuthState.NotAuthorized
     }
 
     fun performAuthResult(result: VKAuthenticationResult) {
