@@ -19,12 +19,14 @@ android {
             useSupportLibrary = true
         }
 
-        addManifestPlaceholders(mapOf(
-            "VKIDRedirectHost" to "vk.com", // Обычно vk.com.
-            "VKIDRedirectScheme" to "vk1233445", // Строго в формате vk{ID приложения}.
-            "VKIDClientID" to "52053663",
-            "VKIDClientSecret" to "J6MLQ1Ocuv8Nsvs0GnTb"
-        ))
+        addManifestPlaceholders(
+            mapOf(
+                "VKIDRedirectHost" to "vk.com", // Обычно vk.com.
+                "VKIDRedirectScheme" to "vk1233445", // Строго в формате vk{ID приложения}.
+                "VKIDClientID" to "52053663",
+                "VKIDClientSecret" to "J6MLQ1Ocuv8Nsvs0GnTb"
+            )
+        )
     }
 
     buildTypes {
@@ -61,6 +63,9 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.android.sdk.core)
     implementation(libs.android.sdk.api)
+    implementation("io.coil-kt:coil-compose:2.7.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.3")
     implementation(libs.gson)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.runtime.livedata)

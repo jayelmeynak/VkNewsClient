@@ -1,11 +1,10 @@
 package com.example.vknewsclient.presentation.main
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.vk.api.sdk.VK
 import com.vk.api.sdk.VKPreferencesKeyValueStorage
 import com.vk.api.sdk.auth.VKAccessToken
 import com.vk.api.sdk.auth.VKAuthenticationResult
@@ -17,8 +16,9 @@ class MainViewModel(applicetion: Application) : AndroidViewModel(applicetion) {
 
 
     init {
-        val  storage = VKPreferencesKeyValueStorage(applicetion)
+        val  storage = VKPreferencesKeyValueStorage(getApplication())
         val token = VKAccessToken.restore(storage)
+        Log.d("MyLog", "Token: ${token?.accessToken}")
         val isLoggedIn = token != null && token.isValid
         _authState.value = if (isLoggedIn) AuthState.Authorized else AuthState.NotAuthorized
     }

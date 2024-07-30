@@ -1,6 +1,6 @@
 package com.example.vknewsclient.presentation.news
 
-import androidx.compose.foundation.Image
+import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,13 +23,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.example.vknewsclient.R
 import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.domain.StatisticItem
 import com.example.vknewsclient.domain.StatisticType
+import com.example.vknewsclient.ui.theme.DarkRed
 
 
 @Composable
@@ -48,15 +51,16 @@ fun PostCard(
             PostHeader(
                 communityName = feedPost.communityName,
                 publicationTime = feedPost.publicationTime,
-                avatarResId = feedPost.avatarResId
+                avatarResId = feedPost.communityImageUrl
             )
             Spacer(modifier = Modifier.height(8.dp))
             PostBody(
                 contentText = feedPost.contentText,
-                contentImageItem = feedPost.contentImageItem
+                contentImageItem = feedPost.contentImageUrl
             )
             Spacer(modifier = Modifier.height(8.dp))
             PostFooter(
+                isFavourite = feedPost.isFavourite,
                 statistic = feedPost.statistics,
                 onLikeClickListener = onLikeClickListener,
                 onCommentClickListener = onCommentClickListener,
@@ -71,18 +75,18 @@ fun PostCard(
 fun PostHeader(
     communityName: String,
     publicationTime: String,
-    avatarResId: Int
+    avatarResId: String
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(
+        AsyncImage(
             modifier = Modifier
                 .size(50.dp)
                 .clip(CircleShape),
-            painter = painterResource(id = avatarResId),
+            model = avatarResId,
             contentDescription = null
         )
         Column(
@@ -105,17 +109,17 @@ fun PostHeader(
 @Composable
 fun PostBody(
     contentText: String,
-    contentImageItem: Int
+    contentImageItem: String?
 ) {
     Text(
         text = contentText, color = MaterialTheme.colorScheme.onPrimary
     )
     Spacer(modifier = Modifier.height(8.dp))
-    Image(
+    AsyncImage(
+        contentScale = ContentScale.FillWidth,
         modifier = Modifier.fillMaxWidth(),
-        painter = painterResource(id = contentImageItem),
-        contentDescription = null,
-        contentScale = ContentScale.FillWidth
+        model = contentImageItem,
+        contentDescription = null
     )
 }
 
@@ -126,6 +130,7 @@ private fun List<StatisticItem>.getItemByType(type: StatisticType): StatisticIte
 
 @Composable
 fun PostFooter(
+    isFavourite: Boolean,
     statistic: List<StatisticItem>,
     onLikeClickListener: (StatisticItem) -> Unit,
     onShareClickListener: (StatisticItem) -> Unit,
@@ -145,7 +150,7 @@ fun PostFooter(
             val viewItem = statistic.getItemByType(StatisticType.VIEWS)
             IconWithText(
                 iconResId = R.drawable.ic_views_count,
-                text = viewItem.count.toString(),
+                text = formatStatisticCount(viewItem.count),
                 onItemClickListener = {
                     onViewsClickListener(viewItem)
                 }
@@ -160,19 +165,20 @@ fun PostFooter(
         ) {
             val shareItem = statistic.getItemByType(StatisticType.SHARE)
             IconWithText(iconResId = R.drawable.ic_share,
-                text = shareItem.count.toString(),
+                text = formatStatisticCount(shareItem.count),
                 onItemClickListener = {
                     onShareClickListener(shareItem)
                 })
             val commentItem = statistic.getItemByType(StatisticType.COMMENTS)
             IconWithText(iconResId = R.drawable.ic_comment,
-                text = commentItem.count.toString(),
+                text = formatStatisticCount(commentItem.count),
                 onItemClickListener = {
                     onCommentClickListener(commentItem)
                 })
             val likeItem = statistic.getItemByType(StatisticType.LIKE)
-            IconWithText(iconResId = R.drawable.ic_like,
-                text = likeItem.count.toString(),
+            IconWithText(iconResId = if (isFavourite) R.drawable.ic_like_set else R.drawable.ic_like,
+                text = formatStatisticCount(likeItem.count),
+                tint = if (isFavourite) DarkRed else MaterialTheme.colorScheme.onPrimary,
                 onItemClickListener = {
                     onLikeClickListener(likeItem)
                 })
@@ -185,6 +191,7 @@ fun PostFooter(
 private fun IconWithText(
     iconResId: Int,
     text: String,
+    tint: Color = MaterialTheme.colorScheme.onPrimary,
     onItemClickListener: () -> Unit
 ) {
     Row(
@@ -194,10 +201,22 @@ private fun IconWithText(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
+            modifier = Modifier.size(20.dp),
             painter = painterResource(id = iconResId),
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onPrimary
+            tint = tint
         )
         Text(text = text, modifier = Modifier.padding(start = 4.dp))
+    }
+}
+
+@SuppressLint("DefaultLocale")
+private fun formatStatisticCount(count: Int): String {
+    return if (count > 100_000) {
+        String.format("%sK", (count / 1000))
+    } else if (count > 1000) {
+        String.format("%.1fK", (count / 1000f))
+    } else {
+        count.toString()
     }
 }
